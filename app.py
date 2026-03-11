@@ -20,7 +20,7 @@ if uploaded_file:
         skill_gaps = ask_llm(f"Analyze this resume and highlight missing skills, certifications, and experiences needed for better job opportunities:\n\n{resume_text}")
 
     with st.spinner("Creating Future Roadmap..."):
-        roadmap = ask_llm,(f"Based on this resume, suggest a future roadmap to improve this person's career prospects (Skill to learn, certification needed, industry exposure): \n\n{resume_text}")
+        roadmap = ask_llm(f"Based on this resume, suggest a future roadmap to improve this person's career prospects (Skill to learn, certification needed, industry exposure): \n\n{resume_text}")
 
     # Display nicely formatted results
     st.markdown("---")
@@ -39,7 +39,11 @@ if uploaded_file:
 
     if st.button("🔍Get Job Recommendations🔎"):
         with st.spinner("Fetching job recommendations based on your resume..."):
-            keywords = ask_llm(f"Extract the most relevant keywords from this resume that can be used for job search:\n\n{resume_text}")
+            keywords = ask_llm(
+                f"From the resume below, return ONLY a short comma-separated list of the top 5 job title keywords "
+                f"suitable for a job search query (e.g. 'AI Engineer, Data Scientist, ML Engineer'). "
+                f"Do not include any explanation or extra text.\n\n{resume_text}"
+            )
 
             search_keywords_cleaned = keywords.replace("\n", " ").strip()
 
@@ -55,9 +59,16 @@ if uploaded_file:
 
         if linkedin_jobs:
             for job in linkedin_jobs:
-                st.markdown(f"**{job['title']}** at **{job['company']}** - {job['location']}")
-                st.markdown(f"Posted on: {job['postedDate']} | Experience: {job['experience']} | Salary: {job.get('salary', 'N/A')}")
-                st.markdown(f"[Apply Here]({job['url']})")
+                title = job.get('title', 'N/A')
+                company = job.get('company', job.get('companyName', 'N/A'))
+                location = job.get('location', 'N/A')
+                posted = job.get('postedDate', job.get('postedAt', 'N/A'))
+                experience = job.get('experience', 'N/A')
+                salary = job.get('salary', 'N/A')
+                url = job.get('url', job.get('link', '#'))
+                st.markdown(f"**{title}** at **{company}** - {location}")
+                st.markdown(f"Posted on: {posted} | Experience: {experience} | Salary: {salary}")
+                st.markdown(f"[Apply Here]({url})")
                 st.markdown("---")
         else:
             st.info("No job recommendations found on LinkedIn based on your resume.")
@@ -67,9 +78,18 @@ if uploaded_file:
 
         if naukri_jobs:
             for job in naukri_jobs:
-                st.markdown(f"**{job['title']}** at **{job['company']}** - {job['location']}")
-                st.markdown(f"Posted on: {job['postedDate']} | Experience: {job['experience']} | Salary: {job.get('salary', 'N/A')}")
-                st.markdown(f"[Apply Here]({job['url']})")
+                title = job.get('title', job.get('jobTitle', 'N/A'))
+                company = job.get('company', job.get('companyName', 'N/A'))
+                location = job.get('location', job.get('placeholders', [{}])[0].get('label', 'N/A') if isinstance(job.get('placeholders'), list) else 'N/A')
+                posted = job.get('postedDate', job.get('footerPlaceholderLabel', 'N/A'))
+                experience = job.get('experience', 'N/A')
+                salary = job.get('salary', job.get('placeholders', [{}])[1].get('label', 'N/A') if isinstance(job.get('placeholders'), list) and len(job.get('placeholders', [])) > 1 else 'N/A')
+                url = job.get('url', job.get('jdURL', '#'))
+                if url and not url.startswith('http'):
+                    url = 'https://www.naukri.com' + url
+                st.markdown(f"**{title}** at **{company}** - {location}")
+                st.markdown(f"Posted on: {posted} | Experience: {experience} | Salary: {salary}")
+                st.markdown(f"[Apply Here]({url})")
                 st.markdown("---")
         else:
             st.info("No job recommendations found on Naukri.com based on your resume.")

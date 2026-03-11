@@ -3,18 +3,11 @@ import os
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
-from apify_client import ApifyClient
 load_dotenv()
 
 
 llm = ChatGroq(
-    model="llama3-8b-8192",
-    messages=[
-        {
-            "role": "user",
-            "content": prompt_template.format(prompt="{prompt}"),
-        }
-    ],
+    model="llama-3.1-8b-instant",
     temperature=0.5,
     api_key=os.getenv("GROQ_API_KEY"),
 )
@@ -32,7 +25,9 @@ def extract_text_from_pdf(uploaded_file):
 
     text = ""
     try:
-        with fitz.open(uploaded_file) as doc:
+        uploaded_file.seek(0)
+        file_bytes = uploaded_file.read()
+        with fitz.open(stream=file_bytes, filetype="pdf") as doc:
             for page in doc:
                 text += page.get_text()
     except Exception as e:
