@@ -50,8 +50,8 @@ if uploaded_file:
         st.success(f"Extracted Suitable Job domain : {search_keywords_cleaned}")
 
         with st.spinner("fetching jobs from LinkedIn and Naukari..."):
-            linkedin_jobs = fetch_linkedin_jobs(search_keywords_cleaned, rows=60)
-            naukri_jobs = fetch_naukri_jobs(search_keywords_cleaned, rows=60)
+            linkedin_jobs = fetch_linkedin_jobs(search_keywords_cleaned, rows=10)
+            naukri_jobs = fetch_naukri_jobs(search_keywords_cleaned, rows=10)
         st.success("Job recommendations fetched successfully!")
 
         st.markdown("---")
@@ -65,10 +65,19 @@ if uploaded_file:
                 posted = job.get('postedDate', job.get('postedAt', 'N/A'))
                 experience = job.get('experience', 'N/A')
                 salary = job.get('salary', 'N/A')
-                url = job.get('url', job.get('link', '#'))
+                url = (
+                    job.get('jobUrl')
+                    or job.get('url')
+                    or job.get('link')
+                    or job.get('applyUrl')
+                )
+                if not url and job.get('id'):
+                    url = f"https://www.linkedin.com/jobs/view/{job['id']}"
+                if not url:
+                    url = '#'
                 st.markdown(f"**{title}** at **{company}** - {location}")
                 st.markdown(f"Posted on: {posted} | Experience: {experience} | Salary: {salary}")
-                st.markdown(f"[Apply Here]({url})")
+                st.markdown(f"<a href='{url}' target='_blank'>🔗 Apply Here</a>", unsafe_allow_html=True)
                 st.markdown("---")
         else:
             st.info("No job recommendations found on LinkedIn based on your resume.")
@@ -89,9 +98,8 @@ if uploaded_file:
                     url = 'https://www.naukri.com' + url
                 st.markdown(f"**{title}** at **{company}** - {location}")
                 st.markdown(f"Posted on: {posted} | Experience: {experience} | Salary: {salary}")
-                st.markdown(f"[Apply Here]({url})")
+                st.markdown(f"<a href='{url}' target='_blank'>🔗 Apply Here</a>", unsafe_allow_html=True)
                 st.markdown("---")
         else:
             st.info("No job recommendations found on Naukri.com based on your resume.")
-    
 

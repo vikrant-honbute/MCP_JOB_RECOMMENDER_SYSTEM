@@ -7,7 +7,7 @@ load_dotenv()
 apify_client = ApifyClient(os.getenv("APIFY_API_KEY"))
 
 # Placeholder functions for fetching jobs from LinkedIn and Naukri
-def fetch_linkedin_jobs(search_query, location="india", rows = 60):
+def fetch_linkedin_jobs(search_query, location="india", rows = 10):
     run_input = {
             "title": search_query,
             "location": location,
@@ -23,10 +23,10 @@ def fetch_linkedin_jobs(search_query, location="india", rows = 60):
     return jobs
 
 # Placeholder function for fetching jobs from Naukri
-def fetch_naukri_jobs(search_query, location="india", rows = 60):
+def fetch_naukri_jobs(search_query, location="india", rows = 10):
     run_input = {
             "keywords": search_query,
-            "maxJobs": 60,
+            "maxJobs": 10,
             "freshness": "all",
             "sortBy": "relevance",
             "experience": "all",
