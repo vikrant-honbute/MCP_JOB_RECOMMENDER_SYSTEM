@@ -26,11 +26,11 @@ def fetch_linkedin_jobs(search_query, location="india", rows = 10):
 def fetch_naukri_jobs(search_query, location="india", rows = 10):
     run_input = {
             "keywords": search_query,
-            "maxJobs": 10,
+            "maxJobs": 50,
             "freshness": "all",
             "sortBy": "relevance",
             "experience": "all",
         }
     run = apify_client.actor("alpcnRV9YI9lYVPWk").call(run_input = run_input)
     jobs = list(apify_client.dataset(run["defaultDatasetId"]).iterate_items())
-    return jobs
+    return jobs[:rows]
