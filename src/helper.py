@@ -3,8 +3,9 @@ import os
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
-
+from apify_client import ApifyClient
 load_dotenv()
+
 
 llm = ChatGroq(
     model="llama3-8b-8192",
@@ -48,9 +49,31 @@ def ask_llm(prompt, max_tokens=500):
     result = chain.invoke({"prompt": prompt})
     return result.content
 
+# # Placeholder functions for fetching jobs from LinkedIn and Naukri
+# def fetch_linkedin_jobs(search_query, location="india", rows = 60):
+#     run_input = {
+#         "title": search_query,
+#         "location": location,
+#         "rows": rows,
+#         "proxy": {
+#             "useApifyProxy": True,
+#             "apifyProxyGroups": ["RESIDENTIAL"],
+#             "apifyProxyCountry": "IN",
+#         }
+#     }
+#     run = apify_client.actor("BHzefUZlZRKWxkTck").call(run_input = run_input)
+#     jobs = list(apify_client.dataset(run["defaultDatasetId"]).iterate_items())
+#     return jobs
 
-def fetch_linkedin_jobs(search_query, location="india", rows = 60):
-    pass
-
-def fetch_naukri_jobs(search_query, location="india", rows = 60):
-    pass
+# # Placeholder function for fetching jobs from Naukri
+# def fetch_naukri_jobs(search_query, location="india", rows = 60):
+#     run_input = {
+#         "keywords": search_query,
+#         "maxJobs": 60,
+#         "freshness": "all",
+#         "sortBy": "relevance",
+#         "experience": "all",
+#     }
+#     run = apify_client.actor("alpcnRV9YI9lYVPWk").call(run_input = run_input)
+#     jobs = list(apify_client.dataset(run["defaultDatasetId"]).iterate_items())
+#     return jobs
